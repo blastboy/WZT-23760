@@ -1,17 +1,17 @@
 #!/bin/bash
 
+# Logfile path
+logfile="/home/vanbreda/galaxias_update.log"    # This is the location of the log-file
+
+# Set date and time formats
+execute_date="19-02-2024"    # Date format is dd-mm-yyyy
+execute_time="07:30"         # Time format is hh:mm
+
 # Check if script is run as root
 if [[ $EUID -ne 0 ]]; then
     echo "This script must be run as root."
     exit 1
 fi
-
-# Logfile path
-logfile="/home/vanbreda/galaxias_update.log"
-
-# Set date and time formats
-execute_date="19-02-2024"  # Date format is dd-mm-yyyy
-execute_time="07:30"      # Time format is hh:mm
 
 # Function to log messages with timestamps
 log() {
