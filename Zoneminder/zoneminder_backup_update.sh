@@ -1,9 +1,18 @@
 #!/bin/bash
 
 # Variables for date and time
-execute_date="19-02-2024"  # Date format is dd-mm-yyyy
+execute_date="19-02-2024"        # Date format is dd-mm-yyyy
 execute_time_backup="06:00"      # Time format is hh:mm
 execute_time_update="12:30"      # Time format is hh:mm
+
+# Logfile path for the main script
+log_file="/home/vanbreda/backup_script.log    # This is the location of the log-file
+
+# Mounting info
+source_location="//10.23.10.11/C$/Backup/Zoneminder"  # A shared folder on a Windows-machine
+mount_point="/mnt/Backup"                             # The mounted location on the Zoneminder-machine
+username="username"                                   # The username of the Windows-machine
+password="password"                                   # The password of the user of Windows-machine
 
 # Extracting hour and minute separately with leading zeros
 hour_backup=$(date -d "$execute_time_backup" '+%H')
@@ -11,15 +20,6 @@ minute_backup=$(date -d "$execute_time_backup" '+%M')
 
 hour_update=$(date -d "$execute_time_update" '+%H')
 minute_update=$(date -d "$execute_time_update" '+%M')
-
-# Logfile path for the main script
-log_file="/home/vanbreda/backup_script.log"
-
-# Mounting info
-source_location="//10.23.10.11/C$/Backup/Zoneminder"
-mount_point="/mnt/Backup"
-username="username"
-password="username"
 
 # Function to log messages with timestamps
 log() {
