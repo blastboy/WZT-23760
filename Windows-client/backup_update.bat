@@ -1,15 +1,15 @@
 @echo off
 set LogFile=C:\VBZ\tools\backup_update.log
 
-:: Network Drive Credentials
-set NetworkShare=\\127.0.0.1\VanBreda
+:: Network Drive Credentials (this will become network drive P:)
+set NetworkShare=\\10.10.10.10\VanBreda
 set NetworkUsername=username
 set NetworkPassword=password
 
 :: Scheduled Task Variables (dd-mm-yyyy format)
 set ExecuteDate=22-02-2024
 set ExecuteBackupTime=12:00
-set ExecuteUpdateTime=03:00
+set ExecuteUpdateTime=15:00
 
 :: Task Scheduler Folder
 set TaskFolder=VanBreda
