@@ -2,12 +2,12 @@
 set LogFile=C:\VBZ\tools\backup_update.log
 
 :: Network Drive Credentials
-set NetworkShare=\\10.10.10.10\VanBreda
+set NetworkShare=\\127.0.0.1\VanBreda
 set NetworkUsername=username
 set NetworkPassword=password
 
 :: Scheduled Task Variables (dd-mm-yyyy format)
-set ExecuteDate=20-02-2024
+set ExecuteDate=22-02-2024
 set ExecuteBackupTime=12:00
 set ExecuteUpdateTime=03:00
 
@@ -24,34 +24,32 @@ set WSUSUpdatePath=P:\WSUS_Offline\Update.cmd
     echo %date% %time% - ERROR: This script requires administrative rights >> %LogFile%
     exit /b 1
 )
-if "%1"=="" (
-    echo You need to run this script with one of the the followig arguments:
-    echo -install              Create Windows Task Scheduler tasks executing the back-up and update commands on a certain date
-    echo -backup               Run the back-up tasks
-    echo -update               Run the update command
-    echo -automated_backup     Run the back-up tasks on the scheduled date
-    echo -automated_update     Run the update tasks on the scheduled date
-    echo -uninstall            Remove the schedule tasks from Task Scheduler
-    echo -help                 Display this text
-    exit /b 0
-)
 
-:: Map network drive
-echo %date% %time% - Mapping network drive... >> %LogFile%
-net use P: %NetworkShare% /user:%NetworkUsername% %NetworkPassword% > nul 2>&1
-if %errorlevel% neq 0 (
-    echo %date% %time% - ERROR: Unable to map network drive >> %LogFile%
-    exit /b 1
+:: Check if the network drive is already mapped
+>nul 2>&1 net use P: && (
+    echo %date% %time% - Network drive already mapped. Skipping mapping step. >> %LogFile%
+) || (
+    :: Map network drive
+    echo %date% %time% - Mapping network drive... >> %LogFile%
+    net use P: %NetworkShare% /user:%NetworkUsername% %NetworkPassword% > nul 2>&1
+    if %errorlevel% neq 0 (
+        echo %date% %time% - ERROR: Unable to map network drive >> %LogFile%
+        exit /b 1
+    )
 )
 
 :: Process arguments
 if "%1"=="" (
-    echo Usage: %0 -install^|-backup^|-update^|-automated_backup^|-automated_update^|-uninstall^|-bd
-    exit /b 1
+    echo You need to run this script with one of the following arguments:
+    echo -install              Create Windows Task Scheduler tasks executing the back-up and update commands on a certain date
+    echo -backup               Run the back-up tasks
+    echo -update               Run the update command
+    echo -uninstall            Remove the schedule tasks from Task Scheduler
+    exit /b 0
 )
 
 if "%1"=="-install" (
-    schtasks /create /tn "%TaskFolder%\AutomatedBackupTask" /tr "%~f0 -automated_backup" /sc once /st %ExecuteBackupTime% /sd %ExecuteDate% /ru %NetworkUsername% /rp %NetworkPassword%
+    schtasks /create /tn "%TaskFolder%\AutomatedBackupTask" /tr "%~f0 -backup" /sc once /st %ExecuteBackupTime% /sd %ExecuteDate% /ru %NetworkUsername% /rp %NetworkPassword%
     schtasks /create /tn "%TaskFolder%\AutomatedUpdateTask" /tr "%WSUSUpdatePath% /verify /autoreboot /updateccp" /sc once /st %ExecuteUpdateTime% /sd %ExecuteDate% /ru %NetworkUsername% /rp %NetworkPassword%
     echo %date% %time% - Scheduled tasks created for automated backup and update in folder %TaskFolder% >> %LogFile%
     exit /b 0
@@ -67,29 +65,6 @@ if "%1"=="-update" (
     echo %date% %time% - Running update... >> %LogFile%
     %WSUSUpdatePath% /verify /updateccp
     exit /b %errorlevel%
-)
-
-if "%1"=="-automated_backup" (
-    echo %date% %time% - Checking if it's time for automated backup... >> %LogFile%
-    if "%date%"=="%ExecuteDate%" (
-        echo %date% %time% - Running automated backup... >> %LogFile%
-        goto :Backup
-    ) else (
-        echo %date% %time% - Not the scheduled date for automated backup >> %LogFile%
-        exit /b 0
-    )
-)
-
-if "%1"=="-automated_update" (
-    echo %date% %time% - Checking if it's time for automated update... >> %LogFile%
-    if "%date%"=="%ExecuteDate%" (
-        echo %date% %time% - Running automated update... >> %LogFile%
-        %WSUSUpdatePath% /verify /autoreboot /updateccp
-        exit /b %errorlevel%
-    ) else (
-        echo %date% %time% - Not the scheduled date for automated update >> %LogFile%
-        exit /b 0
-    )
 )
 
 if "%1"=="-uninstall" (
