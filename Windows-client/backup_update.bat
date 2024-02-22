@@ -1,5 +1,5 @@
 @echo off
-set LogFile=C:\VBZ\tools\backup.log
+set LogFile=C:\VBZ\tools\backup_update.log
 
 :: Network Drive Credentials
 set NetworkShare=\\10.10.10.10\VanBreda
