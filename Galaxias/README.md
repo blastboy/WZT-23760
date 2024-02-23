@@ -70,7 +70,7 @@ Storage Location: select "Backup remote"
 
 Enabled: Yes
 
-Scheduling: every week, 59 minute, 23 hour, tuesday
+Scheduling: every week, 59 minute, 23 hour, monday
 
 **Maintinence**
 
