@@ -1,10 +1,10 @@
 # INEX
 
-## backup_update.sh
+## backup_update.bat
 This script has the ability to create Scheduled tasks to back-up and update INEX-machines.
 It can also run the tasks without a schedule. It will create back-ups on the another server and it will run Windows Update through the WSUS Offline Community Edtion.
 
-Before running this script you should check the content of the script and make changes if necessary
+Before running this script you should check the content of the script and make changes if necessary.
 ```
 set LogFile=C:\VBZ\tools\backup_update.log
 
