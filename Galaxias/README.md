@@ -81,6 +81,9 @@ Delete After 30 Days
 
 Press the "Opslaan"-button to savethe settings.
 
+
+
+
 ## galaxias_update.sh
 This script has the posibility to create a cronjob and run update tasks on a Galaxias-machine.
 
