@@ -87,7 +87,9 @@ Press the "Opslaan"-button to savethe settings.
 ## galaxias_update.sh
 This script has the posibility to create a cronjob and run update tasks on a Galaxias-machine.
 
-Before running this script you should check the content of the script and make changes if necessary
+Before running this script you should check the content of the script and make changes if necessary.
+Save the file as /home/vanbreda/galaxias_update.sh and make it executable (`CHMOD +x /home/vanbreda/galaxias_update.sh`)
+
 ```
 logfile="/home/vanbreda/galaxias_update.log"    # This is the location of the log-file
 
