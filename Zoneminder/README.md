@@ -3,7 +3,8 @@
 ## zoneminder_backup_update.sh
 This script has the posibility to create a cronjob and run backup and update tasks on a Zoneminder-machine.
 
-Before running this script you should check the content of the script and make changes if necessary
+Before running this script you should check the content of the script and make changes if necessary.
+Save the file as /home/vanbreda/zoneminder_backup_update.sh and make it executable (`CHMOD +x /home/vanbreda/zoneminder_backup_update.sh`)
 ```
 execute_date="19-02-2024"        # Date format is dd-mm-yyyy
 execute_time_backup="06:00"      # Time format is hh:mm
