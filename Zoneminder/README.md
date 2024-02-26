@@ -1,6 +1,6 @@
 # Zoneminder
 
-## zoneminder_backup_update.sh
+## configuring zoneminder_backup_update.sh
 This script has the posibility to create a cronjob and run backup and update tasks on a Zoneminder-machine.
 
 Before running this script you should check the content of the script and make changes if necessary.
@@ -14,10 +14,16 @@ log_file="/home/vanbreda/backup_script.log    # This is the location of the log-
 
 source_location="//10.23.10.11/C$/Backup/Zoneminder"  # A shared folder on a Windows-machine
 mount_point="/mnt/Backup"                             # The mounted location on the Zoneminder-machine
+```
+
+## configuring .zoneminder_backup_update
+The username and password have been taken out of the script and should be stored in .zoneminder_backup_update and CHMOD 600 should be applied to that file.
+```
 username="username"                                   # The username of the Windows-machine
 password="password"                                   # The password of the user of Windows-machine
 ```
 
+## executing zoneminder_backup_update.sh
 The script should be run as root and should be run with the following arguments:
 ```
 -install              Setup cronjobs that executes the script with the argument -automated_backup and -automated_update
@@ -29,8 +35,8 @@ The script should be run as root and should be run with the following arguments:
 -help                 Display this text
 ```
 
-## backup_script.sh_old
+## backup/backup_script.sh_old
 Depricated
 
-## update_script.sh_old
+## backup/update_script.sh_old
 Depricated
