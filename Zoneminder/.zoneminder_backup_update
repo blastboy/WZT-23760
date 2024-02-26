@@ -1,0 +1,5 @@
+# This file is used by the zoneminder_backup_update.sh script
+# you should chmod 600 .zoneminder_backup_update it.
+
+username="username"
+password="password"
