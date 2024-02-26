@@ -12,8 +12,12 @@ log_file="/home/vanbreda/zoneminder_backup_update.log"      # This is the locati
 source_location="//10.10.10.10/VanBreda/"        # A shared folder on a Windows-machine
 mount_point="/mnt/VanBreda"                      # The mounted location on the Zoneminder-machine
 destination_folder="Zoneminder1"                 # Modify this with the desired destination folder
-username="username"                              # The username of the Windows-machine
-password="password"                              # The password of the user of Windows-machine
+
+# Create a file .zoneminder_backup_update that contains:
+# username="username"                              # The username of the Windows-machine
+# password="password"                              # The password of the user of Windows-machine
+# chmod 600 .zoneminder_backup_update
+source .zoneminder_backup_update
 
 # Extracting hour and minute separately with leading zeros
 hour_backup=$(date -d "$execute_time_backup" '+%H')
