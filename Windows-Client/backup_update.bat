@@ -1,6 +1,11 @@
 @echo off
 set LogFile=C:\VBZ\tools\backup_update.log
 
+:: Run Locally or Remotely
+:: When set to 0 the files are copied to the Network Drive, when set to 1 the files are copied to the LocalFolder
+set RunLocally=0
+set LocalFolder=D:\Backups\VanBreda
+
 :: Network Drive Credentials (this will become network drive P:)
 set NetworkShare=\\10.10.10.10\VanBreda
 set NetworkUsername=username
@@ -25,16 +30,18 @@ set WSUSUpdatePath=P:\WSUS_Offline\Update.cmd
     exit /b 1
 )
 
-:: Check if the network drive is already mapped
->nul 2>&1 net use P: && (
-    echo %date% %time% - Network drive already mapped. Skipping mapping step. >> %LogFile%
-) || (
-    :: Map network drive
-    echo %date% %time% - Mapping network drive... >> %LogFile%
-    net use P: %NetworkShare% /user:%NetworkUsername% %NetworkPassword% > nul 2>&1
-    if %errorlevel% neq 0 (
-        echo %date% %time% - ERROR: Unable to map network drive >> %LogFile%
-        exit /b 1
+:: Check if the network drive is already mapped (only if RunLocally is 0)
+if %RunLocally%==0 (
+    >nul 2>&1 net use P: && (
+        echo %date% %time% - Network drive already mapped. Skipping mapping step. >> %LogFile%
+    ) || (
+        :: Map network drive
+        echo %date% %time% - Mapping network drive... >> %LogFile%
+        net use P: %NetworkShare% /user:%NetworkUsername% %NetworkPassword% > nul 2>&1
+        if %errorlevel% neq 0 (
+            echo %date% %time% - ERROR: Unable to map network drive >> %LogFile%
+            exit /b 1
+        )
     )
 )
 
@@ -76,45 +83,57 @@ if "%1"=="-uninstall" (
 
 :Backup
 :: Example: call :ExecuteRoboCopy "source" "destination" "file"
-call :ExecuteRoboCopy "C:\VBZ\tools\PoEWatchdog\" "P:\INEX\PoEWatchdog\" "PoEv8.cfg"
-call :ExecuteRoboCopy "C:\VBZ\tools\PoEWatchdogNET\" "P:\INEX\PoEWatchdogNET\" "PoE-NET.cfg"
-call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "P:\INEX\INEX500\" "inex500.ini"
-call :ExecuteRoboCopy "%WINDIR%\" "P:\INEX\INEX500\Windows\" "inex500.ini"
-call :ExecuteRoboCopy "%LocalAppData%\VirtualStore\windows\" "P:\INEX\INEX500\VirtualStore\" "inex500.ini"
-call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "P:\INEX\INEX500\" "inex500.mdb"
-call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "P:\INEX\INEX500\" "inex500servicetool.ini"
-call :ExecuteRoboCopy "%WINDIR%\" "P:\INEX\INEX500\Windows\" "inex500servicetool.ini"
-call :ExecuteRoboCopy "%LocalAppData%\VirtualStore\windows\" "P:\INEX\INEX500\VirtualStore\" "inex500servicetool.ini"
-call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "P:\INEX\INEX500\" "vbzserver.ini"
-call :ExecuteRoboCopy "%WINDIR%\" "P:\INEX\INEX500\Windows\" "vbzserver.ini"
-call :ExecuteRoboCopy "%LocalAppData%\VirtualStore\windows\" "P:\INEX\INEX500\VirtualStore\" "vbzserver.ini"
-call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "P:\INEX\INEX500\" "zorgmana.ini"
-call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "P:\INEX\INEX500\" "History.mdb"
-call :ExecuteRoboCopy "C:\Program Files\dhcp\" "P:\INEX\DHCP\" "DHCPsrv.ini"
-call :ExecuteRoboCopy "C:\Program Files\dhcp\" "P:\INEX\DHCP\" "dynamic"
-call :ExecuteRoboCopy "C:\Program Files\dhcp\" "P:\INEX\DHCP\" "ethers"
-call :ExecuteRoboCopy "C:\Program Files\dhcp\" "P:\INEX\DHCP\" "ignored"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\" "P:\INEX\VIOS2\" "afdelingen.json"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "P:\INEX\VIOS2\DB\" "afdelingen.json"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\" "P:\INEX\VIOS2\" "locaties.json"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "P:\INEX\VIOS2\DB\" "locaties.json"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\" "P:\INEX\VIOS2\" "Regels.json"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "P:\INEX\VIOS2\DB\" "Regels.json"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\" "P:\INEX\VIOS2\" "Regels.json.txt"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "P:\INEX\VIOS2\DB\" "Regels.json.txt"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\" "P:\INEX\VIOS2\" "rooster.json"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "P:\INEX\VIOS2\DB\" "rooster.json"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\" "P:\INEX\VIOS2\" "settings.json"
-call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "P:\INEX\VIOS2\DB\" "settings.json"
-call :ExecuteRoboCopy "C:\VBZ\Espa-MSF\" "P:\INEX\ESPA-MSF\" "basestations.kws"
-call :ExecuteRoboCopy "C:\VBZ\Espa-MSF\" "P:\INEX\ESPA-MSF\" "groepen.txt"
-call :ExecuteRoboCopy "C:\VBZ\Espa-MSF\" "P:\INEX\ESPA-MSF\" "handsets.txt"
+if %RunLocally%==1 (
+    set BaseDest=%LocalFolder%
+) else (
+    set BaseDest=P:
+)
 
-netsh.exe -c interface dump > "P:\INEX\Netwerk_instellingen.txt"
+call :ExecuteRoboCopy "C:\VBZ\tools\PoEWatchdog\" "%BaseDest%\INEX\PoEWatchdog\" "PoEv8.cfg"
+call :ExecuteRoboCopy "C:\VBZ\tools\PoEWatchdogNET\" "%BaseDest%\INEX\PoEWatchdogNET\" "PoE-NET.cfg"
+call :ExecuteRoboCopy "C:\VBZ\tools\PoEWatchdogNET\" "%BaseDest%\INEX\PoEWatchdogNET\" "PoE-NET-settings.pwd"
+call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "%BaseDest%\INEX\INEX500\" "inex500.ini"
+call :ExecuteRoboCopy "%WINDIR%\" "%BaseDest%\INEX\INEX500\Windows\" "inex500.ini"
+call :ExecuteRoboCopy "%LocalAppData%\VirtualStore\windows\" "%BaseDest%\INEX\INEX500\VirtualStore\" "inex500.ini"
+call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "%BaseDest%\INEX\INEX500\" "inex500.mdb"
+call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "%BaseDest%\INEX\INEX500\" "inex500servicetool.ini"
+call :ExecuteRoboCopy "%WINDIR%\" "%BaseDest%\INEX\INEX500\Windows\" "inex500servicetool.ini"
+call :ExecuteRoboCopy "%LocalAppData%\VirtualStore\windows\" "%BaseDest%\INEX\INEX500\VirtualStore\" "inex500servicetool.ini"
+call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "%BaseDest%\INEX\INEX500\" "vbzserver.ini"
+call :ExecuteRoboCopy "%WINDIR%\" "%BaseDest%\INEX\INEX500\Windows\" "vbzserver.ini"
+call :ExecuteRoboCopy "%LocalAppData%\VirtualStore\windows\" "%BaseDest%\INEX\INEX500\VirtualStore\" "vbzserver.ini"
+call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "%BaseDest%\INEX\INEX500\" "zorgmana.ini"
+call :ExecuteRoboCopy "C:\VBZ\Database\Default\" "%BaseDest%\INEX\INEX500\" "History.mdb"
+call :ExecuteRoboCopy "C:\VBZ\INEX500\" "%BaseDest%\INEX\INEX500\" "History.his"
+call :ExecuteRoboCopy "C:\VBZ\AlbireoIP\files\configs\asterisk\" "%BaseDest%\INEX\Galaxias\AlbireoIP_config\" "aipunits.conf"
+call :ExecuteRoboCopy "C:\VBZ\AlbireoIP\files\configs\asterisk\" "%BaseDest%\INEX\Galaxias\AlbireoIP_config\" "extensions_addon_custom.conf"
+call :ExecuteRoboCopy "C:\Program Files\dhcp\" "%BaseDest%\INEX\DHCP\" "DHCPsrv.ini"
+call :ExecuteRoboCopy "C:\Program Files\dhcp\" "%BaseDest%\INEX\DHCP\" "dynamic"
+call :ExecuteRoboCopy "C:\Program Files\dhcp\" "%BaseDest%\INEX\DHCP\" "ethers"
+call :ExecuteRoboCopy "C:\Program Files\dhcp\" "%BaseDest%\INEX\DHCP\" "ignored"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\" "%BaseDest%\INEX\VIOS2\" "afdelingen.json"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "%BaseDest%\INEX\VIOS2\DB\" "afdelingen.json"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\" "%BaseDest%\INEX\VIOS2\" "locaties.json"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "%BaseDest%\INEX\VIOS2\DB\" "locaties.json"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\" "%BaseDest%\INEX\VIOS2\" "Regels.json"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "%BaseDest%\INEX\VIOS2\DB\" "Regels.json"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\" "%BaseDest%\INEX\VIOS2\" "Regels.json.txt"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "%BaseDest%\INEX\VIOS2\DB\" "Regels.json.txt"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\" "%BaseDest%\INEX\VIOS2\" "rooster.json"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "%BaseDest%\INEX\VIOS2\DB\" "rooster.json"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\" "%BaseDest%\INEX\VIOS2\" "settings.json"
+call :ExecuteRoboCopy "C:\VBZ\Vios2\DB\" "%BaseDest%\INEX\VIOS2\DB\" "settings.json"
+call :ExecuteRoboCopy "C:\VBZ\Espa-MSF\" "%BaseDest%\INEX\ESPA-MSF\" "basestations.kws"
+call :ExecuteRoboCopy "C:\VBZ\Espa-MSF\" "%BaseDest%\INEX\ESPA-MSF\" "groepen.txt"
+call :ExecuteRoboCopy "C:\VBZ\Espa-MSF\" "%BaseDest%\INEX\ESPA-MSF\" "handsets.txt"
 
-:: Unmap network drive after backup tasks
-echo %date% %time% - Unmapping network drive... >> %LogFile%
-net use P: /delete > nul 2>&1
+netsh.exe -c interface dump > "%BaseDest%\INEX\Netwerk_instellingen.txt"
+
+:: Unmap network drive after backup tasks (only if RunLocally is 0)
+if %RunLocally%==0 (
+    echo %date% %time% - Unmapping network drive... >> %LogFile%
+    net use P: /delete > nul 2>&1
+)
 
 exit /b 0
 
