@@ -8,6 +8,9 @@ Before running this script you should check the content of the script and make c
 ```
 set LogFile=C:\VBZ\tools\backup_update.log
 
+set RunLocally=0
+set LocalFolder=D:\Backups\VanBreda
+
 set NetworkShare=\\10.10.10.10\VanBreda
 set NetworkUsername=username
 set NetworkPassword=password
