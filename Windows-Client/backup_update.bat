@@ -17,7 +17,7 @@ set ExecuteBackupTime=12:00
 set ExecuteUpdateTime=15:00
 
 :: Task Scheduler Folder
-set TaskFolder=VanBreda
+set TaskFolder=Van Breda
 
 :: WSUS Offline Update Path
 set WSUSUpdatePath=P:\WSUS_Offline\Update.cmd
