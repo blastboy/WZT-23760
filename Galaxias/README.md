@@ -11,20 +11,22 @@ Access the Galaxias with a terminal and create a folder called VanBreda
 mkdir /mnt/VanBreda
 ```
 
-Create a file /home/vanbreda/.vios that includes the following information
+Create a file /home/vanbreda/.galaxias that includes the following information
 ```
 username={username} # Username that allows access to the Windows Network-share
 password={password} # Password that allows access to the Windows Network-share
 ```
 Give the file limited access:
 ```
-CHMOD /home/vanbreda/.vios
+CHMOD 400 /home/vanbreda/.galaxias
 ```
 
 Edit the file /etc/fstab and the following line:
 ```
-//{Windows Network-share}/{folder}        /mnt/VanBreda   cifs    uid=asterisk,gid=asterisk,credentials=/home/vanbreda/.vios,iocharset=utf8
+//{Windows Network-share}/{folder}        /mnt/VanBreda   cifs    uid=asterisk,gid=asterisk,credentials=/home/vanbreda/.galaxias,iocharset=utf8  0  0
 ```
+Install the cifs-utils with ###sudo yum install cifs-utils###
+
 Mount the network-share
 ```
 mount -a
